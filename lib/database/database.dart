@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/person_model.dart';
+import 'dart:convert';
 
 class DBProvider {
   DBProvider._();
@@ -37,18 +38,31 @@ class DBProvider {
         ' $columnReceivingTime TEXT)');
   }
 
-  Future<List<MessageModel>> getNotes() async {
+  String encodeStringList(List<String> list) {
+    return jsonEncode(list);
+  }
+
+  List<String> decodeStringList(String json) {
+    List<dynamic> decoded = jsonDecode(json);
+    return decoded.cast<String>();
+  }
+
+  Future<List<MessageModel>> getMessage() async {
     Database? db = await database;
     final List<Map<String, dynamic>> messageMapList =
         await db!.query(messageTable);
     final List<MessageModel> messageList = [];
-    for (var noteMap in messageMapList) {
-      messageList.add(MessageModel.fromMap(noteMap));
+    for (var messageMap in messageMapList) {
+      messageList.add(MessageModel(
+        id: messageMap[columnId],
+        messages: decodeStringList(messageMap[columnMessage]),
+        receivingTime: DateTime.parse(messageMap[columnReceivingTime]),
+      ));
     }
     return messageList;
   }
 
-  Future<int> deleteNote(String id) async {
+  Future<int> deleteMessage(String id) async {
     Database? db = await database;
     return await db!.delete(
       messageTable,
@@ -67,7 +81,13 @@ class DBProvider {
       receivingTime: receivingTime,
     );
     Database? db = await database;
-    await db!.insert(messageTable, model.toMap(),
+    await db!.insert(
+        messageTable,
+        {
+          columnId: model.id,
+          columnMessage: encodeStringList(model.messages),
+          columnReceivingTime: model.receivingTime.toIso8601String(),
+        },
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 }

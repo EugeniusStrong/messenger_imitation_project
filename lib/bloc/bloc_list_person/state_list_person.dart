@@ -13,17 +13,6 @@ class PersonListInitialState extends PersonListState {
   List<Object?> get props => [];
 }
 
-// class PersonListMessageLoading extends PersonListState {
-//   final List<List<MessageContent>> oldMessageList;
-//   final bool isFirstFetch;
-//
-//   const PersonListMessageLoading(this.oldMessageList,
-//       {this.isFirstFetch = false});
-//
-//   @override
-//   List<Object?> get props => [oldMessageList];
-// }
-
 class PersonListLoadedState extends PersonListState {
   final List<Result> personList;
 

@@ -45,7 +45,7 @@ class _PersonViewState extends State<PersonView> {
                       ),
                     ),
                     title: Text('${itemData.name.first} ${itemData.name.last}'),
-                    //subtitle: Text(itemData.message.messages[index]),
+                    //subtitle: Text(itemData.message.messages[0]),
                   ),
                 );
               },

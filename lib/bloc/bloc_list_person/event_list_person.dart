@@ -12,32 +12,12 @@ class LoadListEvent extends PersonListEvent {
 
 class LoadMessageEvent extends PersonListEvent {
   final String id;
-  final String senderId;
-  final String recipientId;
   final String message;
   final DateTime receivingTime;
 
   LoadMessageEvent(
-      {required this.id,
-      required this.senderId,
-      required this.recipientId,
-      required this.message,
-      required this.receivingTime});
+      {required this.id, required this.message, required this.receivingTime});
 
   @override
-  List<Object?> get props =>
-      [id, senderId, recipientId, message, receivingTime];
+  List<Object?> get props => [id, message, receivingTime];
 }
-
-// class CreateListMessageRequested extends PersonListEvent {
-//   final ContentApi contentApi;
-//
-//   CreateListMessageRequested({
-//     required this.contentApi,
-//   });
-//
-//   @override
-//   List<Object?> get props => [
-//         contentApi,
-//       ];
-//}
