@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/bloc_list_person/bloc_list_person.dart';
-import '../bloc/bloc_list_person/state_list_person.dart';
+import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_bloc.dart';
+import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_state.dart';
 
 class PersonView extends StatefulWidget {
   const PersonView({super.key});
@@ -21,17 +21,18 @@ class _PersonViewState extends State<PersonView> {
         ),
         centerTitle: true,
       ),
-      body: BlocBuilder<ListPersonBloc, PersonListState>(
+      body: BlocBuilder<ListPersonScreenBloc, ListPersonScreenState>(
         builder: (context, state) {
-          if (state is PersonListInitialState) {
+          if (state is ListPersonScreenInitial ||
+              state is ListPersonScreenLoadInProgress) {
             return const Center(
               child: CircularProgressIndicator(),
             );
-          } else if (state is PersonListLoadedState) {
+          } else if (state is ListPersonScreenLoadSuccess) {
             return ListView.builder(
-              itemCount: state.personList.length,
+              itemCount: state.personWithMessageList.length,
               itemBuilder: (BuildContext context, int index) {
-                final itemData = state.personList[index];
+                final itemData = state.personWithMessageList[index].person;
                 return Card(
                   child: ListTile(
                     leading: Container(
@@ -45,12 +46,17 @@ class _PersonViewState extends State<PersonView> {
                       ),
                     ),
                     title: Text('${itemData.name.first} ${itemData.name.last}'),
-                    //subtitle: Text(itemData.message.messages[0]),
+                    subtitle: Text(
+                      state.personWithMessageList[index].messages.first
+                              .messages ??
+                          '',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 );
               },
             );
-          } else if (state is PersonListErrorState) {
+          } else if (state is ListPersonScreenError) {
             return Center(
               child: Text(state.message),
             );

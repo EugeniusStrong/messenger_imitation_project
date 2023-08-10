@@ -1,20 +1,23 @@
 import 'dart:convert';
+import 'package:uuid/uuid.dart';
 
-class PersonModel {
-  List<Result> results;
+class Result {
+  List<Person> persons;
 
-  PersonModel({required this.results});
+  Result({required this.persons});
 
-  factory PersonModel.fromJson(String jsonString) {
+  factory Result.fromJson(String jsonString) {
     final Map<String, dynamic> json = jsonDecode(jsonString);
-    final List<dynamic> resultsJson = json['results'];
-    final List<Result> resultsList =
-        resultsJson.map((result) => Result.fromJson(result)).toList();
-    return PersonModel(results: resultsList);
+    final List<dynamic> personsJson = json['results'];
+    final List<Person> personsList =
+        personsJson.map((person) => Person.fromJson(person)).toList();
+    return Result(persons: personsList);
   }
 }
 
-class Result {
+// TODO: Сделать переменные финальными.
+class Person {
+  String id;
   String gender;
   Name name;
   String email;
@@ -22,9 +25,10 @@ class Result {
   String cell;
   Picture picture;
   String nat;
-  MessageModel message;
 
-  Result({
+
+  Person({
+    required this.id,
     required this.gender,
     required this.name,
     required this.email,
@@ -32,12 +36,14 @@ class Result {
     required this.cell,
     required this.picture,
     required this.nat,
-    required List<String> messages,
-  }) : message =
-            MessageModel(messages: messages, receivingTime: DateTime.now());
 
-  factory Result.fromJson(Map<String, dynamic> json) {
-    return Result(
+  });
+
+  factory Person.fromJson(Map<String, dynamic> json) {
+    const uuid = Uuid();
+    String id = uuid.v4();
+    return Person(
+      id: id,
       gender: json['gender'],
       name: Name.fromJson(json['name']),
       email: json['email'],
@@ -45,7 +51,7 @@ class Result {
       cell: json['cell'],
       picture: Picture.fromJson(json['picture']),
       nat: json['nat'],
-      messages: [],
+
     );
   }
 }
@@ -82,42 +88,4 @@ class Picture {
   }
 }
 
-class MessageModel {
-  String? id;
-  List<String> messages;
-  DateTime receivingTime;
 
-  MessageModel({
-    this.id,
-    required this.messages,
-    required this.receivingTime,
-  });
-
-  MessageModel copyWith({
-    String? id,
-    List<String>? messages,
-    DateTime? receivingTime,
-  }) {
-    return MessageModel(
-      id: id ?? this.id,
-      messages: messages ?? this.messages,
-      receivingTime: receivingTime ?? this.receivingTime,
-    );
-  }
-
-  factory MessageModel.fromMap(Map<String, dynamic> map) {
-    return MessageModel(
-      id: map['id'],
-      messages: List<String>.from(map['messages']),
-      receivingTime: DateTime.parse(map['receivingTime']),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'messages': messages,
-      'receivingTime': receivingTime.toIso8601String(),
-    };
-  }
-}

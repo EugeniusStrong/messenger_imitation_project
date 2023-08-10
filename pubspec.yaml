@@ -42,6 +42,7 @@ dependencies:
   path_provider: ^2.0.15
   sqflite: ^2.2.8+4
   lorem_ipsum_generator: ^0.0.3
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

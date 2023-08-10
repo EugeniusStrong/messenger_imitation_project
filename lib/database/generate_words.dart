@@ -1,44 +1,25 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lorem_ipsum_generator/lorem_ipsum_generator.dart';
-// import 'database.dart';
+import 'package:messenger_imitation_project/models/message.dart';
 
-// DBProvider _dbProvider = DBProvider.db;
-
-class GenerateWords {
-  List<String> getWords() {
+class GenerateMessage {
+  List<Message> getMessage() {
     final random = Random();
     final messageCount = random.nextInt(5) + 1;
-    final List<String> randomMessagesList = [];
+    final List<Message> randomMessagesList = [];
 
     for (int i = 0; i < messageCount; i++) {
       final paragraphCount = random.nextInt(3) + 1;
       final wordCount = random.nextInt(9) + 7;
-
       final text = LoremIpsumGenerator.generate(
         paragraphs: paragraphCount,
         wordsPerParagraph: wordCount,
       );
       debugPrint('Generated message $i: $text');
-      randomMessagesList.add(text);
+      randomMessagesList
+          .add(Message(messages: text, receivingTime: DateTime.now()));
     }
     return randomMessagesList;
   }
-
-  // Future<void> insertRandomMessagesToDB() async {
-  //   List<String> randomMessagesList = getWords();
-  //
-  //   for (String message in randomMessagesList) {
-  //     try {
-  //       await _dbProvider.insertOrUpdate(
-  //         message: [message],
-  //         receivingTime: DateTime.now(),
-  //       );
-  //       debugPrint('Message inserted successfully: $message');
-  //     } catch (e) {
-  //       debugPrint('Error inserting message: $message');
-  //       debugPrint(e as String?);
-  //     }
-  //   }
-  // }
 }
