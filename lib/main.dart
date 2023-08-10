@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:messenger_imitation_project/pages/person_page.dart';
+import 'bloc/bloc_list_person/bloc_list_person.dart';
+import 'bloc/bloc_list_person/event_list_person.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,16 +11,18 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Scaffold(),
+      home: BlocProvider<ListPersonBloc>(
+        create: (context) => ListPersonBloc()..add(LoadListEvent()),
+        child: const PersonPage(),
+      ),
     );
   }
 }
