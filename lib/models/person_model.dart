@@ -15,17 +15,15 @@ class Result {
   }
 }
 
-// TODO: Сделать переменные финальными.
 class Person {
-  String id;
-  String gender;
-  Name name;
-  String email;
-  String phone;
-  String cell;
-  Picture picture;
-  String nat;
-
+  final String id;
+  final String gender;
+  final Name name;
+  final String email;
+  final String phone;
+  final String cell;
+  final Picture picture;
+  final String nat;
 
   Person({
     required this.id,
@@ -36,7 +34,6 @@ class Person {
     required this.cell,
     required this.picture,
     required this.nat,
-
   });
 
   factory Person.fromJson(Map<String, dynamic> json) {
@@ -51,7 +48,6 @@ class Person {
       cell: json['cell'],
       picture: Picture.fromJson(json['picture']),
       nat: json['nat'],
-
     );
   }
 }
@@ -87,5 +83,3 @@ class Picture {
     );
   }
 }
-
-

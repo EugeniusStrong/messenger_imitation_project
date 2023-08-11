@@ -7,6 +7,14 @@ class GenerateMessage {
   List<Message> getMessage() {
     final random = Random();
     final messageCount = random.nextInt(5) + 1;
+
+    int maxMilliseconds = 31535999000;
+    double randomMilliseconds = random.nextDouble() * maxMilliseconds;
+
+    DateTime startDateTime = DateTime.now();
+    DateTime randomDateTime =
+        startDateTime.add(Duration(milliseconds: randomMilliseconds.toInt()));
+
     final List<Message> randomMessagesList = [];
 
     for (int i = 0; i < messageCount; i++) {
@@ -18,7 +26,7 @@ class GenerateMessage {
       );
       debugPrint('Generated message $i: $text');
       randomMessagesList
-          .add(Message(messages: text, receivingTime: DateTime.now()));
+          .add(Message(messages: text, receivingTime: randomDateTime));
     }
     return randomMessagesList;
   }

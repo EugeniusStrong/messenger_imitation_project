@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_bloc.dart';
 import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_state.dart';
+import 'package:messenger_imitation_project/pages/message_page.dart';
 
 class PersonView extends StatefulWidget {
   const PersonView({super.key});
@@ -33,24 +34,64 @@ class _PersonViewState extends State<PersonView> {
               itemCount: state.personWithMessageList.length,
               itemBuilder: (BuildContext context, int index) {
                 final itemData = state.personWithMessageList[index].person;
-                return Card(
-                  child: ListTile(
-                    leading: Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        image: DecorationImage(
-                            image: NetworkImage(itemData.picture.large),
-                            fit: BoxFit.cover),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MessagePage(
+                                  personWithMessages:
+                                      state.personWithMessageList[index],
+                                )));
+                  },
+                  child: Card(
+                    child: ListTile(
+                      leading: Container(
+                        height: 55,
+                        width: 55,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          image: DecorationImage(
+                              image: NetworkImage(itemData.picture.large),
+                              fit: BoxFit.cover),
+                        ),
                       ),
-                    ),
-                    title: Text('${itemData.name.first} ${itemData.name.last}'),
-                    subtitle: Text(
-                      state.personWithMessageList[index].messages.first
-                              .messages ??
-                          '',
-                      overflow: TextOverflow.ellipsis,
+                      title:
+                          Text('${itemData.name.first} ${itemData.name.last}'),
+                      subtitle: Text(
+                        state.personWithMessageList[index].messages.first
+                                .messages ??
+                            '',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            state.personWithMessageList[index].messages.last
+                                .receivingTime
+                                .toString()
+                                .substring(11, 16),
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          Container(
+                            height: 20,
+                            width: 30,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey[300]!),
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.white70),
+                            child: Center(
+                              child: Text(
+                                state.personWithMessageList[index].messages
+                                    .length
+                                    .toString(),
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
