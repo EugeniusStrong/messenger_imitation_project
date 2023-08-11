@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:messenger_imitation_project/models/person_with_messages.dart';
+import 'package:intl/intl.dart';
 
 class MessagePage extends StatelessWidget {
   final PersonWithMessages personWithMessages;
@@ -11,6 +12,8 @@ class MessagePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    personWithMessages.messages
+        .sort((a, b) => b.receivingTime.compareTo(a.receivingTime));
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -42,32 +45,41 @@ class MessagePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    personWithMessages.person.picture.large),
-                                fit: BoxFit.cover),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6),
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              image: DecorationImage(
+                                  image: NetworkImage(
+                                      personWithMessages.person.picture.large),
+                                  fit: BoxFit.cover),
+                            ),
                           ),
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                ' ${personWithMessages.person.name.first} ${personWithMessages.person.name.last}'),
-                            Text(
-                              'Был(а) ${personWithMessages.person.phone}',
-                              style: const TextStyle(
-                                color: Colors.black38,
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  ' ${personWithMessages.person.name.first} ${personWithMessages.person.name.last}'),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 4),
+                                child: Text(
+                                  personWithMessages.person.email,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.black38,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         IconButton(
                           onPressed: () {},
@@ -96,6 +108,45 @@ class MessagePage extends StatelessWidget {
                     image: AssetImage('assets/images/backGround.png'),
                     fit: BoxFit.cover,
                   ),
+                ),
+                child: ListView.builder(
+                  reverse: true,
+                  itemCount: personWithMessages.messages.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final messages = personWithMessages.messages;
+                    return Column(
+                      children: [
+                        Container(
+                          width: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.black54),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${messages[index].receivingTime.day}.${messages[index].receivingTime.month}.${messages[index].receivingTime.year}',
+                            ),
+                          ),
+                        ),
+                        Card(
+                          child: ListTile(
+                            title: Text(messages[index].messages ?? ''),
+                            subtitle: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                messages[index]
+                                    .receivingTime
+                                    .toString()
+                                    .substring(11, 16),
+                                style: const TextStyle(color: Colors.black38),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
