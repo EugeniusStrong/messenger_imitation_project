@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messenger_imitation_project/models/person_with_messages.dart';
 import 'package:intl/intl.dart';
+import 'package:messenger_imitation_project/pages/info_person_page.dart';
 
 class MessagePage extends StatelessWidget {
   final PersonWithMessages personWithMessages;
@@ -82,7 +83,15 @@ class MessagePage extends StatelessWidget {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => InfoPersonPage(
+                                          personWithMessages:
+                                              personWithMessages,
+                                        )));
+                          },
                           icon: const Icon(
                             Icons.arrow_forward_ios_rounded,
                             color: Colors.black38,
