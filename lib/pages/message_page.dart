@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:messenger_imitation_project/models/message.dart';
 import 'package:messenger_imitation_project/models/person_with_messages.dart';
-import 'package:intl/intl.dart';
 import 'package:messenger_imitation_project/pages/info_person_page.dart';
+import 'package:flutter/foundation.dart' as foundation;
 
-class MessagePage extends StatelessWidget {
+class MessagePage extends StatefulWidget {
   final PersonWithMessages personWithMessages;
 
   const MessagePage({
@@ -12,8 +14,30 @@ class MessagePage extends StatelessWidget {
   });
 
   @override
+  State<MessagePage> createState() => _MessagePageState();
+}
+
+class _MessagePageState extends State<MessagePage> {
+  final textInputController = TextEditingController();
+  List<String> selectedEmojis = [];
+  late PersonWithMessages _personWithMessages;
+  bool emojiShowing = false;
+
+  @override
+  void initState() {
+    _personWithMessages = widget.personWithMessages;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    textInputController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    personWithMessages.messages
+    widget.personWithMessages.messages
         .sort((a, b) => b.receivingTime.compareTo(a.receivingTime));
     return Scaffold(
       body: SafeArea(
@@ -56,8 +80,8 @@ class MessagePage extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               image: DecorationImage(
-                                  image: NetworkImage(
-                                      personWithMessages.person.picture.large),
+                                  image: NetworkImage(widget
+                                      .personWithMessages.person.picture.large),
                                   fit: BoxFit.cover),
                             ),
                           ),
@@ -68,11 +92,11 @@ class MessagePage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  ' ${personWithMessages.person.name.first} ${personWithMessages.person.name.last}'),
+                                  ' ${_personWithMessages.person.name.first} ${widget.personWithMessages.person.name.last}'),
                               Padding(
                                 padding: const EdgeInsets.only(left: 4),
                                 child: Text(
-                                  personWithMessages.person.email,
+                                  _personWithMessages.person.email,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     color: Colors.black38,
@@ -89,7 +113,7 @@ class MessagePage extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => InfoPersonPage(
                                           personWithMessages:
-                                              personWithMessages,
+                                              widget.personWithMessages,
                                         )));
                           },
                           icon: const Icon(
@@ -120,9 +144,9 @@ class MessagePage extends StatelessWidget {
                 ),
                 child: ListView.builder(
                   reverse: true,
-                  itemCount: personWithMessages.messages.length,
+                  itemCount: _personWithMessages.messages.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final messages = personWithMessages.messages;
+                    final messages = _personWithMessages.messages;
                     return Column(
                       children: [
                         Container(
@@ -174,10 +198,23 @@ class MessagePage extends StatelessWidget {
                   Expanded(
                     child: Form(
                       child: TextFormField(
+                        controller: textInputController,
+                        onChanged: (text) {
+                          setState(() {});
+                          if (text.isNotEmpty) {
+                            setState(() {
+                              emojiShowing = false;
+                            });
+                          }
+                        },
                         decoration: InputDecoration(
                           hintText: 'Начни писать что-нибудь...',
                           suffixIcon: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              setState(() {
+                                emojiShowing = !emojiShowing;
+                              });
+                            },
                             icon: const Icon(
                               Icons.emoji_emotions_outlined,
                               size: 30,
@@ -201,18 +238,71 @@ class MessagePage extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.keyboard_voice_outlined,
+                    onPressed: () {
+                      if (textInputController.text.isNotEmpty ||
+                          selectedEmojis.isNotEmpty) {
+                        final newMessage = Message(
+                          messages: textInputController.text,
+                          receivingTime: DateTime.now(),
+                          isRead: false,
+                        );
+
+                        setState(() {
+                          _personWithMessages.messages.add(newMessage);
+                          textInputController.clear();
+                          selectedEmojis.clear();
+                        });
+                      }
+                    },
+                    icon: Icon(
+                      textInputController.text.isEmpty
+                          ? Icons.keyboard_voice_outlined
+                          : Icons.send,
                       size: 35,
                     ),
                   ),
                 ],
               ),
             ),
+            Offstage(
+              offstage: !emojiShowing,
+              child: SizedBox(
+                height: 250,
+                child: EmojiPicker(
+                  textEditingController: textInputController,
+                  onBackspacePressed: () {
+                    final text = textInputController.text;
+                    if (text.isNotEmpty) {
+                      textInputController.text =
+                          text.substring(0, text.length - 1);
+                      textInputController.selection =
+                          TextSelection.fromPosition(TextPosition(
+                              offset: textInputController.text.length));
+                    }
+                  },
+                  onEmojiSelected: (category, emoji) {
+                    _onEmojiSelected(emoji);
+                  },
+                  config: Config(
+                    columns: 7,
+                    emojiSizeMax: 32 *
+                        (foundation.defaultTargetPlatform == TargetPlatform.iOS
+                            ? 1.30
+                            : 1.0),
+                    // Other configuration settings
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  void _onEmojiSelected(Emoji emoji) {
+    setState(() {
+      selectedEmojis.add(emoji.emoji);
+    });
   }
 }

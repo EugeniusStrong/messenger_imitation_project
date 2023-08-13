@@ -25,8 +25,8 @@ class GenerateMessage {
         paragraphs: paragraphCount,
         wordsPerParagraph: wordCount,
       );
-      randomMessagesList
-          .add(Message(messages: text, receivingTime: randomDateTime));
+      randomMessagesList.add(Message(
+          messages: text, receivingTime: randomDateTime, isRead: false));
     }
     return randomMessagesList;
   }
