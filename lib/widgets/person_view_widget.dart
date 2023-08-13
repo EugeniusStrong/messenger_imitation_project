@@ -14,7 +14,6 @@ class PersonView extends StatefulWidget {
 class _PersonViewState extends State<PersonView> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: IconButton(
@@ -37,7 +36,6 @@ class _PersonViewState extends State<PersonView> {
                 final itemData = state.personWithMessageList[index].person;
                 return GestureDetector(
                   onTap: () {
-
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -76,23 +74,22 @@ class _PersonViewState extends State<PersonView> {
                                 .substring(11, 16),
                             style: const TextStyle(fontSize: 13),
                           ),
-                         Container(
-                                  height: 20,
-                                  width: 30,
-                                  decoration: BoxDecoration(
-                                      border:
-                                          Border.all(color: Colors.grey[300]!),
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.white70),
-                                  child: Center(
-                                    child: Text(
-                                      state.personWithMessageList[index]
-                                          .messages.length
-                                          .toString(),
-                                      style: const TextStyle(fontSize: 13),
-                                    ),
-                                  ),
-                                ),
+                          Container(
+                            height: 20,
+                            width: 30,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey[300]!),
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.white70),
+                            child: Center(
+                              child: Text(
+                                state.personWithMessageList[index].messages
+                                    .length
+                                    .toString(),
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

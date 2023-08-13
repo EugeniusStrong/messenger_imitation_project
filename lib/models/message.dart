@@ -4,13 +4,13 @@ class Message {
   String? id;
   String? messages;
   DateTime receivingTime;
-  bool isRead;
+  bool isOutgoing;
 
   Message(
       {this.id,
       required this.messages,
       required this.receivingTime,
-      required this.isRead}) {
+      required this.isOutgoing}) {
     const uuid = Uuid();
     id = uuid.v4();
   }
@@ -19,13 +19,13 @@ class Message {
     String? id,
     String? messages,
     DateTime? receivingTime,
-    bool? isRead,
+    bool? isOutgoing,
   }) {
     return Message(
       id: id ?? this.id,
       messages: messages ?? this.messages,
       receivingTime: receivingTime ?? this.receivingTime,
-      isRead: isRead ?? this.isRead,
+      isOutgoing: isOutgoing ?? this.isOutgoing,
     );
   }
 }

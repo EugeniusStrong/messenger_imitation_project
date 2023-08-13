@@ -80,8 +80,8 @@ class _MessagePageState extends State<MessagePage> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               image: DecorationImage(
-                                  image: NetworkImage(widget
-                                      .personWithMessages.person.picture.large),
+                                  image: NetworkImage(
+                                      _personWithMessages.person.picture.large),
                                   fit: BoxFit.cover),
                             ),
                           ),
@@ -162,17 +162,24 @@ class _MessagePageState extends State<MessagePage> {
                             ),
                           ),
                         ),
-                        Card(
-                          child: ListTile(
-                            title: Text(messages[index].messages ?? ''),
-                            subtitle: Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                messages[index]
-                                    .receivingTime
-                                    .toString()
-                                    .substring(11, 16),
-                                style: const TextStyle(color: Colors.black38),
+                        Container(
+                          margin: EdgeInsets.only(
+                            right: messages[index].isOutgoing ? 0 : 50,
+                            left: messages[index].isOutgoing ? 50 : 0,
+                          ),
+                          width: 350,
+                          child: Card(
+                            child: ListTile(
+                              title: Text(messages[index].messages ?? ''),
+                              subtitle: Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  messages[index]
+                                      .receivingTime
+                                      .toString()
+                                      .substring(11, 16),
+                                  style: const TextStyle(color: Colors.black38),
+                                ),
                               ),
                             ),
                           ),
@@ -244,7 +251,7 @@ class _MessagePageState extends State<MessagePage> {
                         final newMessage = Message(
                           messages: textInputController.text,
                           receivingTime: DateTime.now(),
-                          isRead: false,
+                          isOutgoing: true,
                         );
 
                         setState(() {
@@ -289,7 +296,6 @@ class _MessagePageState extends State<MessagePage> {
                         (foundation.defaultTargetPlatform == TargetPlatform.iOS
                             ? 1.30
                             : 1.0),
-                    // Other configuration settings
                   ),
                 ),
               ),

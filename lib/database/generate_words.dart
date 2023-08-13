@@ -26,7 +26,7 @@ class GenerateMessage {
         wordsPerParagraph: wordCount,
       );
       randomMessagesList.add(Message(
-          messages: text, receivingTime: randomDateTime, isRead: false));
+          messages: text, receivingTime: randomDateTime, isOutgoing: false));
     }
     return randomMessagesList;
   }
