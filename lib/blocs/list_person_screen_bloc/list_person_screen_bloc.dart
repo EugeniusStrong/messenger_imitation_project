@@ -11,8 +11,23 @@ class ListPersonScreenBloc
     extends Bloc<ListPersonScreenEvent, ListPersonScreenState> {
   final PersonApi personApi;
   final GenerateMessage generateWords;
+
   ListPersonScreenBloc(this.personApi, this.generateWords)
       : super(ListPersonScreenLoadInProgress()) {
+    on<ListPersonScreenChanged>((event, emit) {
+      final currentState = state;
+      if (currentState is ListPersonScreenLoadSuccess) {
+        final list =
+            List<PersonWithMessages>.from(currentState.personWithMessageList);
+        final updateChat = event.personWithMessages;
+        final index =
+            list.indexWhere((e) => e.person.id == updateChat.person.id);
+        if (index != -1) {
+          list[index] = updateChat;
+        }
+        emit(ListPersonScreenLoadSuccess(personWithMessageList: list));
+      }
+    });
     on<ListPersonScreenOpened>((event, emit) async {
       emit(ListPersonScreenLoadInProgress());
 
@@ -27,6 +42,7 @@ class ListPersonScreenBloc
       }
     });
   }
+
   List<PersonWithMessages> _getPersonWithMessage(List<Person> persons) {
     final result = <PersonWithMessages>[];
     for (final person in persons) {

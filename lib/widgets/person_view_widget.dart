@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:list_ext/list_ext.dart';
 import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_bloc.dart';
+import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_event.dart';
 import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_state.dart';
+import 'package:messenger_imitation_project/models/person_with_messages.dart';
 import 'package:messenger_imitation_project/pages/message_page.dart';
 
 class PersonView extends StatefulWidget {
@@ -15,13 +18,6 @@ class _PersonViewState extends State<PersonView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: () {},
-        ),
-        centerTitle: true,
-      ),
       body: BlocBuilder<ListPersonScreenBloc, ListPersonScreenState>(
         builder: (context, state) {
           if (state is ListPersonScreenInitial ||
@@ -34,15 +30,16 @@ class _PersonViewState extends State<PersonView> {
               itemCount: state.personWithMessageList.length,
               itemBuilder: (BuildContext context, int index) {
                 final itemData = state.personWithMessageList[index].person;
+                final itemCount = state.personWithMessageList[index].messages
+                    .countWhere((e) => !e.isRead);
                 return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MessagePage(
-                                  personWithMessages:
-                                      state.personWithMessageList[index],
-                                )));
+                  onTap: () async {
+                    final res = await _openMessagePage(
+                        context, state.personWithMessageList[index]);
+                    if (res != null) {
+                      BlocProvider.of<ListPersonScreenBloc>(context)
+                          .add(ListPersonScreenChanged(res));
+                    }
                   },
                   child: Card(
                     child: ListTile(
@@ -59,7 +56,7 @@ class _PersonViewState extends State<PersonView> {
                       title:
                           Text('${itemData.name.first} ${itemData.name.last}'),
                       subtitle: Text(
-                        state.personWithMessageList[index].messages.first
+                        state.personWithMessageList[index].messages.last
                                 .messages ??
                             '',
                         overflow: TextOverflow.ellipsis,
@@ -74,22 +71,21 @@ class _PersonViewState extends State<PersonView> {
                                 .substring(11, 16),
                             style: const TextStyle(fontSize: 13),
                           ),
-                          Container(
-                            height: 20,
-                            width: 30,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey[300]!),
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.white70),
-                            child: Center(
-                              child: Text(
-                                state.personWithMessageList[index].messages
-                                    .length
-                                    .toString(),
-                                style: const TextStyle(fontSize: 13),
+                          if (itemCount > 0)
+                            Container(
+                              height: 20,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey[300]!),
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white70),
+                              child: Center(
+                                child: Text(
+                                  '$itemCount',
+                                  style: const TextStyle(fontSize: 13),
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -106,5 +102,14 @@ class _PersonViewState extends State<PersonView> {
         },
       ),
     );
+  }
+
+  Future<PersonWithMessages?> _openMessagePage(
+      BuildContext context, PersonWithMessages personWithMessages) {
+    return Navigator.push<PersonWithMessages?>(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                MessagePage(personWithMessages: personWithMessages)));
   }
 }

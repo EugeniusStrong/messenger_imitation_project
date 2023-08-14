@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:messenger_imitation_project/models/message.dart';
+import 'package:messenger_imitation_project/models/person_model.dart';
 import 'package:messenger_imitation_project/models/person_with_messages.dart';
 import 'package:messenger_imitation_project/pages/info_person_page.dart';
 import 'package:flutter/foundation.dart' as foundation;
@@ -20,14 +21,10 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   final textInputController = TextEditingController();
   List<String> selectedEmojis = [];
-  late PersonWithMessages _personWithMessages;
   bool emojiShowing = false;
-
-  @override
-  void initState() {
-    _personWithMessages = widget.personWithMessages;
-    super.initState();
-  }
+  late final Person _person = widget.personWithMessages.person;
+  late final List<Message> _messages =
+      List.from(widget.personWithMessages.messages);
 
   @override
   void dispose() {
@@ -37,8 +34,7 @@ class _MessagePageState extends State<MessagePage> {
 
   @override
   Widget build(BuildContext context) {
-    widget.personWithMessages.messages
-        .sort((a, b) => b.receivingTime.compareTo(a.receivingTime));
+    _messages.sort((a, b) => b.receivingTime.compareTo(a.receivingTime));
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -58,7 +54,14 @@ class _MessagePageState extends State<MessagePage> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      _updateMessages();
+                      Navigator.pop(
+                        context,
+                        PersonWithMessages(
+                          _person,
+                          _messages,
+                        ),
+                      );
                     },
                     icon: const Icon(Icons.arrow_back_outlined),
                   ),
@@ -80,8 +83,7 @@ class _MessagePageState extends State<MessagePage> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               image: DecorationImage(
-                                  image: NetworkImage(
-                                      _personWithMessages.person.picture.large),
+                                  image: NetworkImage(_person.picture.large),
                                   fit: BoxFit.cover),
                             ),
                           ),
@@ -92,11 +94,11 @@ class _MessagePageState extends State<MessagePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  ' ${_personWithMessages.person.name.first} ${widget.personWithMessages.person.name.last}'),
+                                  ' ${_person.name.first} ${_person.name.last}'),
                               Padding(
                                 padding: const EdgeInsets.only(left: 4),
                                 child: Text(
-                                  _personWithMessages.person.email,
+                                  _person.email,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     color: Colors.black38,
@@ -113,7 +115,8 @@ class _MessagePageState extends State<MessagePage> {
                                 MaterialPageRoute(
                                     builder: (context) => InfoPersonPage(
                                           personWithMessages:
-                                              widget.personWithMessages,
+                                              PersonWithMessages(
+                                                  _person, _messages),
                                         )));
                           },
                           icon: const Icon(
@@ -144,9 +147,9 @@ class _MessagePageState extends State<MessagePage> {
                 ),
                 child: ListView.builder(
                   reverse: true,
-                  itemCount: _personWithMessages.messages.length,
+                  itemCount: _messages.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final messages = _personWithMessages.messages;
+                    final messages = _messages;
                     return Column(
                       children: [
                         Container(
@@ -252,10 +255,11 @@ class _MessagePageState extends State<MessagePage> {
                           messages: textInputController.text,
                           receivingTime: DateTime.now(),
                           isOutgoing: true,
+                          isRead: true,
                         );
 
                         setState(() {
-                          _personWithMessages.messages.add(newMessage);
+                          _messages.add(newMessage);
                           textInputController.clear();
                           selectedEmojis.clear();
                         });
@@ -310,5 +314,14 @@ class _MessagePageState extends State<MessagePage> {
     setState(() {
       selectedEmojis.add(emoji.emoji);
     });
+  }
+
+  void _updateMessages() {
+    for (final message in _messages) {
+      if (!message.isRead) {
+        final index = _messages.indexOf(message);
+        _messages[index] = message.copyWith(isRead: true);
+      }
+    }
   }
 }
