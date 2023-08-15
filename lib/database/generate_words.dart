@@ -33,4 +33,28 @@ class GenerateMessage {
     }
     return randomMessagesList;
   }
+
+  List<Message> addedMessage() {
+    final random = Random();
+    final messageCount = random.nextInt(2) + 1;
+
+    final List<Message> randomMessagesList = [];
+
+    for (int i = 0; i < messageCount; i++) {
+      DateTime randomDateTime = DateTime.now();
+
+      final wordCount = random.nextInt(14) + 1;
+      final text = LoremIpsumGenerator.generate(
+        paragraphs: 1,
+        wordsPerParagraph: wordCount,
+      );
+      randomMessagesList.add(Message(
+        messages: text,
+        receivingTime: randomDateTime,
+        isOutgoing: false,
+        isRead: false,
+      ));
+    }
+    return randomMessagesList;
+  }
 }

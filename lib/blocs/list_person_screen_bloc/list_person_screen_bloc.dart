@@ -14,6 +14,16 @@ class ListPersonScreenBloc
 
   ListPersonScreenBloc(this.personApi, this.generateWords)
       : super(ListPersonScreenLoadInProgress()) {
+    on<ListPersonScreenAddedMessages>((event, emit) {
+      final currentState = state;
+      if (currentState is ListPersonScreenLoadSuccess) {
+        final updatedPersonWithMessagesList =
+            _generateNewMessages(currentState.personWithMessageList);
+        emit(ListPersonScreenLoadSuccess(
+          personWithMessageList: updatedPersonWithMessagesList,
+        ));
+      }
+    });
     on<ListPersonScreenChanged>((event, emit) {
       final currentState = state;
       if (currentState is ListPersonScreenLoadSuccess) {
@@ -48,6 +58,19 @@ class ListPersonScreenBloc
     for (final person in persons) {
       final messages = generateWords.getMessage();
       result.add(PersonWithMessages(person, messages));
+    }
+    return result;
+  }
+
+  List<PersonWithMessages> _generateNewMessages(
+      List<PersonWithMessages> personWithMessageList) {
+    final result = <PersonWithMessages>[];
+    for (final personWithMessages in personWithMessageList) {
+      final messages = generateWords.addedMessage();
+      result.add(PersonWithMessages(
+        personWithMessages.person,
+        [...personWithMessages.messages, ...messages],
+      ));
     }
     return result;
   }

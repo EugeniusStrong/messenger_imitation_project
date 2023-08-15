@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:list_ext/list_ext.dart';
@@ -6,6 +8,7 @@ import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_p
 import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_state.dart';
 import 'package:messenger_imitation_project/models/person_with_messages.dart';
 import 'package:messenger_imitation_project/pages/message_page.dart';
+import 'package:timer_builder/timer_builder.dart';
 
 class PersonView extends StatefulWidget {
   const PersonView({super.key});
@@ -15,9 +18,33 @@ class PersonView extends StatefulWidget {
 }
 
 class _PersonViewState extends State<PersonView> {
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      final bloc = BlocProvider.of<ListPersonScreenBloc>(context);
+      bloc.add(ListPersonScreenAddedMessages());
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'FakeMessengerApp',
+          style:
+              TextStyle(fontWeight: FontWeight.w500, color: Colors.indigo[400]),
+        ),
+      ),
       body: BlocBuilder<ListPersonScreenBloc, ListPersonScreenState>(
         builder: (context, state) {
           if (state is ListPersonScreenInitial ||
@@ -56,7 +83,7 @@ class _PersonViewState extends State<PersonView> {
                       title:
                           Text('${itemData.name.first} ${itemData.name.last}'),
                       subtitle: Text(
-                        state.personWithMessageList[index].messages.last
+                        state.personWithMessageList[index].messages.first
                                 .messages ??
                             '',
                         overflow: TextOverflow.ellipsis,
@@ -65,27 +92,33 @@ class _PersonViewState extends State<PersonView> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
-                            state.personWithMessageList[index].messages.last
+                            state.personWithMessageList[index].messages.first
                                 .receivingTime
                                 .toString()
                                 .substring(11, 16),
                             style: const TextStyle(fontSize: 13),
                           ),
-                          if (itemCount > 0)
-                            Container(
-                              height: 20,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey[300]!),
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: Colors.white70),
-                              child: Center(
-                                child: Text(
-                                  '$itemCount',
-                                  style: const TextStyle(fontSize: 13),
+                          itemCount > 0
+                              ? Container(
+                                  height: 20,
+                                  width: 30,
+                                  decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: Colors.grey[300]!),
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.indigo[400]),
+                                  child: Center(
+                                    child: Text(
+                                      '$itemCount',
+                                      style: const TextStyle(
+                                          fontSize: 13, color: Colors.white),
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox(
+                                  height: 20,
+                                  width: 30,
                                 ),
-                              ),
-                            ),
                         ],
                       ),
                     ),

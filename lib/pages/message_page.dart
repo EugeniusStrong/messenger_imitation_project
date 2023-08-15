@@ -3,8 +3,11 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:messenger_imitation_project/models/message.dart';
 import 'package:messenger_imitation_project/models/person_model.dart';
 import 'package:messenger_imitation_project/models/person_with_messages.dart';
+import 'package:messenger_imitation_project/pages/about.dart';
 import 'package:messenger_imitation_project/pages/info_person_page.dart';
 import 'package:flutter/foundation.dart' as foundation;
+
+enum SampleItem { itemOne, itemTwo }
 
 class MessagePage extends StatefulWidget {
   final PersonWithMessages personWithMessages;
@@ -25,6 +28,7 @@ class _MessagePageState extends State<MessagePage> {
   late final Person _person = widget.personWithMessages.person;
   late final List<Message> _messages =
       List.from(widget.personWithMessages.messages);
+  SampleItem? selectedMenu;
 
   @override
   void dispose() {
@@ -69,7 +73,7 @@ class _MessagePageState extends State<MessagePage> {
                     width: 250,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: Colors.indigo[400],
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -94,14 +98,18 @@ class _MessagePageState extends State<MessagePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  ' ${_person.name.first} ${_person.name.last}'),
+                                ' ${_person.name.first} ${_person.name.last}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 4),
                                 child: Text(
                                   _person.email,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    color: Colors.black38,
+                                    color: Colors.white54,
                                   ),
                                 ),
                               ),
@@ -121,19 +129,49 @@ class _MessagePageState extends State<MessagePage> {
                           },
                           icon: const Icon(
                             Icons.arrow_forward_ios_rounded,
-                            color: Colors.black38,
+                            color: Colors.white54,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.more_vert,
-                      color: Colors.black,
-                    ),
-                  )
+                  PopupMenuButton<SampleItem>(
+                    initialValue: selectedMenu,
+                    // Callback that sets the selected popup menu item.
+                    onSelected: (SampleItem item) {
+                      setState(() {
+                        selectedMenu = item;
+                      });
+                      if (item == SampleItem.itemOne) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InfoPersonPage(
+                              personWithMessages:
+                                  PersonWithMessages(_person, _messages),
+                            ),
+                          ),
+                        );
+                      }
+                      if (item == SampleItem.itemTwo) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AboutMe()));
+                      }
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<SampleItem>>[
+                      const PopupMenuItem<SampleItem>(
+                        value: SampleItem.itemOne,
+                        child: Text('Просмотр контакта'),
+                      ),
+                      const PopupMenuItem<SampleItem>(
+                        value: SampleItem.itemTwo,
+                        child: Text('О разработчике'),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -199,7 +237,61 @@ class _MessagePageState extends State<MessagePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return FractionallySizedBox(
+                            heightFactor: 0.7,
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(
+                                    height: 40,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ...buildIconWithText(
+                                        Icons.description_outlined,
+                                        'Документ',
+                                      ),
+                                      ...buildIconWithText(
+                                          Icons.camera_alt_outlined, 'Камера'),
+                                      ...buildIconWithText(
+                                          Icons.image_outlined, 'Галерея'),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ...buildIconWithText(
+                                        Icons.headphones_outlined,
+                                        'Аудио',
+                                      ),
+                                      ...buildIconWithText(Icons.place_outlined,
+                                          'Местоположение'),
+                                      ...buildIconWithText(
+                                          Icons.person, 'Контакты'),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                     icon: const Icon(
                       Icons.add_circle_outline_sharp,
                       size: 35,
@@ -247,8 +339,8 @@ class _MessagePageState extends State<MessagePage> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
+                  InkWell(
+                    onTap: () {
                       if (textInputController.text.isNotEmpty ||
                           selectedEmojis.isNotEmpty) {
                         final newMessage = Message(
@@ -265,7 +357,15 @@ class _MessagePageState extends State<MessagePage> {
                         });
                       }
                     },
-                    icon: Icon(
+                    onLongPress: () {
+                      const snackBar = SnackBar(
+                        content: Text(
+                            'Аудиосообщения не работает в тестовом режиме...'),
+                        duration: Duration(seconds: 2),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    },
+                    child: Icon(
                       textInputController.text.isEmpty
                           ? Icons.keyboard_voice_outlined
                           : Icons.send,
@@ -323,5 +423,39 @@ class _MessagePageState extends State<MessagePage> {
         _messages[index] = message.copyWith(isRead: true);
       }
     }
+  }
+
+  List<Widget> buildIconWithText(IconData iconData, String text) {
+    return [
+      SizedBox(
+        height: 100,
+        width: 100,
+        child: Column(
+          children: [
+            IconButton(
+              onPressed: () {
+                final snackBar = SnackBar(
+                  content: Text('$text нельзя добавить в тестовом режиме...'),
+                  duration: const Duration(seconds: 2),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                iconData,
+                color: Colors.black,
+                size: 45,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              text,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: Colors.black, fontSize: 15),
+            ),
+          ],
+        ),
+      ),
+    ];
   }
 }
