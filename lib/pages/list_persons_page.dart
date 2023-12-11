@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/person_view_widget.dart';
 
-class PersonPage extends StatelessWidget {
-  const PersonPage({Key? key}) : super(key: key);
+class ListPersonsPage extends StatelessWidget {
+  const ListPersonsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -1,16 +1,13 @@
 # messenger_imitation_project
 
-A new Flutter project.
+# Описание проекта
 
-## Getting Started
+**Проект создавался, как тестовое задание для собеседования. Суть задания: сделать имитацию
+мессенджера с характерными внешними чертами, с возможностью поступления новых сообщений в реальном
+времени от списка контактов. В поле чата осуществить возможность ответа на сообщения, так
+же возможность просмотра контактных данных собеседника на отдельном экране. Фрэймворк Flutter.**
 
-This project is a starting point for a Flutter application.
+|          Список контактов           |      Экран чата с собеседником      |         Информация о контакте         |            Ответ собеседнику            | Прикрепление файлов - только заглушка! |   Новые сообщения от списка контактов   |
+|:-----------------------------------:|:-----------------------------------:|:-------------------------------------:|:---------------------------------------:|:--------------------------------------:|:---------------------------------------:|
+| ![](./preview_images/main_menu.png) | ![](./preview_images/chat_page.png) | ![](./preview_images/info_person.png) | ![](./preview_images/chat_page_two.png) | ![](./preview_images/chat_feature.png) | ![](./preview_images/main_page_two.png) |
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

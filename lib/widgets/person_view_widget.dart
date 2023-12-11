@@ -7,8 +7,7 @@ import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_p
 import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_event.dart';
 import 'package:messenger_imitation_project/blocs/list_person_screen_bloc/list_person_screen_state.dart';
 import 'package:messenger_imitation_project/models/person_with_messages.dart';
-import 'package:messenger_imitation_project/pages/message_page.dart';
-import 'package:timer_builder/timer_builder.dart';
+import 'package:messenger_imitation_project/pages/chat_with_person.dart';
 
 class PersonView extends StatefulWidget {
   const PersonView({super.key});
@@ -143,6 +142,6 @@ class _PersonViewState extends State<PersonView> {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                MessagePage(personWithMessages: personWithMessages)));
+                ChatWithPersonPage(personWithMessages: personWithMessages)));
   }
 }
